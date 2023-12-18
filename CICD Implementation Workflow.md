@@ -2,13 +2,13 @@
 
 **Prerequisites:**
 
-**AWS Account:** Create an AWS account for infrastructure provisioning.
+- **AWS Account:** Create an AWS account for infrastructure provisioning.
 
-**AWS CLI and Terraform:** Install AWS CLI and Terraform on your local machine.
+- **AWS CLI and Terraform:** Install AWS CLI and Terraform on your local machine.
 
-**Git Repository-1:** Set up a Git repository for storing application code.
+- **Git Repository-1:** Set up a Git repository for storing application code.
 
-**Git Repository-2:** Set up a Git repository for updating K8s manifest with latest artifact.
+- **Git Repository-2:** Set up a Git repository for updating K8s manifest with latest artifact.
 
 **Steps:**
 
@@ -33,3 +33,41 @@
 **10. Documentation and Post-Implementation:** Document the entire setup, including infrastructure, CI/CD pipelines, and configurations. Conduct post-implementation reviews and iterate based on feedback.
 
 Please note that this is a high-level overview, and detailed implementation will require adjusting based on specific project needs, security requirements, and organizational practices. Additionally, consider using tools like Helm for Kubernetes package management and AWS CloudFormation for infrastructure provisioning, depending on organizational preferences.
+
+**CI/CD Pipeline Workflow:** 
+
+- **Build and Unit Testing (Maven):** Jenkins initiates the build process for the Java application using Maven. Unit tests are executed to ensure code functionality.
+
+- **Static Code Analysis (SonarQube):** The code is analyzed statically using SonarQube to identify and address code quality issues.
+
+- **Docker Image Creation:** Docker images for frontend and backend microservices are created to encapsulate the application components.
+
+- **Security Scanning (Trivy):** Trivy is used to scan Docker images for security vulnerabilities, ensuring secure containerization.
+
+- **Push to Docker Registry:** Docker images are pushed to a Docker registry for versioning and centralized distribution.
+
+- **Update Manifest and Commit:** Jenkins, using one Git account, updates the Kubernetes manifests in the Git repository. This repository holds the declarative configuration for the deployment.
+
+- **Deployment on EKS with ArgoCD:** ArgoCD, using a separate Git account for manifest updates, continuously monitors the Git repository. When changes are detected, ArgoCD automatically deploys the updated application components to the EKS cluster.
+
+**Multiple Git Accounts:**
+
+- **Jenkins Git Account:** Jenkins uses a Git account to fetch the source code, build artifacts, and perform the initial stages of the pipeline.
+
+- **Manifest Update Git Account:** A separate Git account, used exclusively for updating Kubernetes manifests, enhances security by restricting access to critical deployment configurations.
+
+**Considerations:**
+
+- **Access Control:** Ensure that each Git account has appropriate access permissions. Jenkins account needs read access to the source code repository, while the manifest update account should have write access only to the Kubernetes manifests.
+
+- **Secrets Management:** Manage Git credentials securely within Jenkins, ensuring sensitive information is protected.
+
+- **Auditability:** Keep logs and records of pipeline executions for auditability and traceability.
+
+- **Continuous Improvement:** Regularly review and enhance the pipeline based on feedback, new tooling, and evolving best practices.
+
+This setup follows a secure and efficient CI/CD process, demonstrating the integration of various tools and the use of separate Git accounts for specific tasks.
+
+**Project Explaination in few lines:**
+
+_Implemented a robust and secure CI/CD pipeline for a 3-tier Java application with Jenkins declarative pipelines. The process involves building, testing, and analyzing the code using Maven and SonarQube. Docker images for frontend and backend microservices are created and scanned for security vulnerabilities with Trivy before being pushed to a Docker registry. Two Git accounts are utilized: one for Jenkins fetching source code, and another dedicated to updating Kubernetes manifests. ArgoCD monitors the Git repository for manifest changes and automatically deploys updates to an EKS cluster, enhancing security through separate Git accounts._
