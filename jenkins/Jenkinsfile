@@ -1,0 +1,81 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = "java-demo-app"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+        ECR_REPOSITORY = "123456789012.dkr.ecr.eu-west-1.amazonaws.com/java-demo-app"
+        MANIFEST_REPO = "https://github.com/example/k8s-manifests.git"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/example/java-demo-app.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                sh 'mvn sonar:sonar'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t ${APP_NAME}:${IMAGE_TAG} .'
+            }
+        }
+
+        stage('Trivy Scan') {
+            steps {
+                sh 'trivy image ${APP_NAME}:${IMAGE_TAG}'
+            }
+        }
+
+        stage('Push to Amazon ECR') {
+            steps {
+                sh '''
+                docker tag ${APP_NAME}:${IMAGE_TAG} ${ECR_REPOSITORY}:${IMAGE_TAG}
+                docker push ${ECR_REPOSITORY}:${IMAGE_TAG}
+                '''
+            }
+        }
+
+        stage('Update Kubernetes Manifest') {
+            steps {
+                sh '''
+                git clone ${MANIFEST_REPO}
+                sed -i "s|image:.*|image: ${ECR_REPOSITORY}:${IMAGE_TAG}|g" deployment.yaml
+                git commit -am "Update image"
+                git push
+                '''
+            }
+        }
+
+    }
+
+    post {
+        success {
+            echo "Pipeline completed successfully."
+        }
+
+        failure {
+            echo "Pipeline failed."
+        }
+    }
+}
