@@ -4,19 +4,19 @@ Developer
 
 ↓
 
-GitHub Push
+Push Code to GitHub
 
 ↓
 
-Webhook
+GitHub Webhook
 
 ↓
 
-Jenkins
+Jenkins Pipeline
 
 ↓
 
-Checkout Code
+Checkout Source Code
 
 ↓
 
@@ -28,7 +28,11 @@ Unit Tests
 
 ↓
 
-SonarQube Scan
+SonarQube Analysis
+
+↓
+
+Authenticate using AWS IAM Role
 
 ↓
 
@@ -36,11 +40,11 @@ Docker Build
 
 ↓
 
-Trivy Scan
+Trivy Image Scan
 
 ↓
 
-Push Image to Amazon ECR
+Push Docker Image to Amazon ECR
 
 ↓
 
@@ -48,11 +52,15 @@ Update Kubernetes Manifest Repository
 
 ↓
 
-Git Commit
+Commit & Push Manifest Changes
 
 ↓
 
-ArgoCD Sync
+ArgoCD Detects Repository Changes
+
+↓
+
+Synchronize Application
 
 ↓
 
@@ -60,4 +68,20 @@ Deploy to Amazon EKS
 
 ↓
 
-Application Running
+Application Pods Running
+
+↓
+
+Prometheus Collects Metrics
+
+↓
+
+Grafana Visualizes Dashboards
+
+↓
+
+Loki Aggregates Logs
+
+↓
+
+Users Access the Application
